@@ -1,0 +1,7 @@
+name: MendingBeGone
+version: '${project.version}'
+main: me.youhavetrouble.mendingbegone.MendingBeGone
+authors: ["YouHaveTrouble"]
+description: Removes mending and replaces it with unbreaking
+api-version: 1.14
+folia-supported: true
