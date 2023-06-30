@@ -26,6 +26,7 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getLogger().info("Mending enchantment will be replaced with unbreaking 3");
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -54,7 +55,7 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onVillagerJoinWorld(InventoryOpenEvent event) {
+    public void onOpenVillagerInventory(InventoryOpenEvent event) {
         if (!(event.getInventory() instanceof MerchantInventory)) return;
         MerchantInventory merchantInventory = (MerchantInventory) event.getInventory();
         removeMendingTrade(merchantInventory.getMerchant());
