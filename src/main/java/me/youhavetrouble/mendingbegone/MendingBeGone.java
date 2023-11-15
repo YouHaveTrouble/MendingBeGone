@@ -16,6 +16,7 @@ import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -69,11 +70,23 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
 
     private void replaceMendingOnItem(ItemStack itemStack) {
         if (itemStack == null) return;
+        if (!itemStack.hasItemMeta()) return;
         if (itemStack.containsEnchantment(Enchantment.MENDING)) {
             itemStack.removeEnchantment(Enchantment.MENDING);
             if (itemStack.containsEnchantment(Enchantment.DURABILITY))
                 itemStack.removeEnchantment(Enchantment.DURABILITY);
             itemStack.addEnchantment(Enchantment.DURABILITY, 3);
+        }
+        if (!Material.ENCHANTED_BOOK.equals(itemStack.getType())) return;
+        ItemMeta meta = itemStack.getItemMeta();
+        if (!(meta instanceof EnchantmentStorageMeta)) return;
+        EnchantmentStorageMeta storage = (EnchantmentStorageMeta) meta;
+        if (storage.hasStoredEnchant(Enchantment.MENDING)) {
+            storage.removeStoredEnchant(Enchantment.MENDING);
+            if (storage.hasStoredEnchant(Enchantment.DURABILITY))
+                storage.removeStoredEnchant(Enchantment.DURABILITY);
+            storage.addStoredEnchant(Enchantment.DURABILITY, 3, true);
+            itemStack.setItemMeta(storage);
         }
     }
 
