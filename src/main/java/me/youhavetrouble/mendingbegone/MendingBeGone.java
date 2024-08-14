@@ -24,15 +24,6 @@ import java.util.List;
 
 public final class MendingBeGone extends JavaPlugin implements Listener {
 
-    private final ItemStack unbreaking3;
-
-    MendingBeGone() {
-        unbreaking3 = new ItemStack(Material.ENCHANTED_BOOK);
-        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) unbreaking3.getItemMeta();
-        meta.addStoredEnchant(Enchantment.DURABILITY, 3, true);
-        unbreaking3.setItemMeta(meta);
-    }
-
     @Override
     public void onEnable() {
         getLogger().info("Mending enchantment will be replaced with unbreaking 3");
@@ -114,8 +105,13 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
 
         for (int index : toReplace) {
             MerchantRecipe oldTrade = trades.get(index);
+            ItemStack result = oldTrade.getResult().clone();
+            EnchantmentStorageMeta storage = (EnchantmentStorageMeta) result.getItemMeta();
+            storage.removeStoredEnchant(Enchantment.MENDING);
+            storage.addStoredEnchant(Enchantment.DURABILITY, 3, true);
+            result.setItemMeta(storage);
             MerchantRecipe newTrade = new MerchantRecipe(
-                    unbreaking3.clone(),
+                    result,
                     oldTrade.getUses(),
                     oldTrade.getMaxUses(),
                     oldTrade.hasExperienceReward(),
