@@ -118,6 +118,9 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
                     oldTrade.getVillagerExperience(),
                     oldTrade.getPriceMultiplier()
             );
+            for (ItemStack ingredient : oldTrade.getIngredients()) {
+                newTrade.addIngredient(ingredient);
+            }
             trades.set(index, newTrade);
         }
         merchant.setRecipes(trades);
