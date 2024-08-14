@@ -24,6 +24,15 @@ import java.util.List;
 
 public final class MendingBeGone extends JavaPlugin implements Listener {
 
+    private final ItemStack unbreaking3;
+
+    MendingBeGone() {
+        unbreaking3 = new ItemStack(Material.ENCHANTED_BOOK);
+        EnchantmentStorageMeta meta = (EnchantmentStorageMeta) unbreaking3.getItemMeta();
+        meta.addStoredEnchant(Enchantment.DURABILITY, 3, true);
+        unbreaking3.setItemMeta(meta);
+    }
+
     @Override
     public void onEnable() {
         getLogger().info("Mending enchantment will be replaced with unbreaking 3");
@@ -92,11 +101,29 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
 
     private void removeMendingTrade(Merchant merchant) {
         List<MerchantRecipe> trades = new ArrayList<>(merchant.getRecipes());
-        trades.removeIf(recipe -> {
-            if (!recipe.getResult().getType().equals(Material.ENCHANTED_BOOK)) return false;
+        List<Integer> toReplace = new ArrayList<>();
+        int i = 0;
+        for (MerchantRecipe recipe : trades) {
+            if (!recipe.getResult().getType().equals(Material.ENCHANTED_BOOK)) continue;
             EnchantmentStorageMeta storage = (EnchantmentStorageMeta) recipe.getResult().getItemMeta();
-            return storage.hasStoredEnchant(Enchantment.MENDING);
-        });
+            if (storage.hasStoredEnchant(Enchantment.MENDING)) {
+                toReplace.add(i);
+            }
+        }
+        if (toReplace.isEmpty()) return;
+
+        for (int index : toReplace) {
+            MerchantRecipe oldTrade = trades.get(index);
+            MerchantRecipe newTrade = new MerchantRecipe(
+                    unbreaking3.clone(),
+                    oldTrade.getUses(),
+                    oldTrade.getMaxUses(),
+                    oldTrade.hasExperienceReward(),
+                    oldTrade.getVillagerExperience(),
+                    oldTrade.getPriceMultiplier()
+            );
+            trades.set(index, newTrade);
+        }
         merchant.setRecipes(trades);
     }
 }
