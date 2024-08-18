@@ -93,23 +93,22 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
     private void removeMendingTrade(Merchant merchant) {
         List<MerchantRecipe> trades = new ArrayList<>(merchant.getRecipes());
         List<Integer> toReplace = new ArrayList<>();
-        int i = 0;
-        for (MerchantRecipe recipe : trades) {
+
+        for (int i = 0; i < trades.size(); i++) {
+            MerchantRecipe recipe = trades.get(i);
             if (!recipe.getResult().getType().equals(Material.ENCHANTED_BOOK)) continue;
+            if (!(recipe.getResult().getItemMeta() instanceof EnchantmentStorageMeta)) continue;
             EnchantmentStorageMeta storage = (EnchantmentStorageMeta) recipe.getResult().getItemMeta();
-            if (storage.hasStoredEnchant(Enchantment.MENDING)) {
-                toReplace.add(i);
-            }
+            if (!storage.hasStoredEnchant(Enchantment.MENDING)) continue;
+            toReplace.add(i);
         }
+
         if (toReplace.isEmpty()) return;
 
         for (int index : toReplace) {
             MerchantRecipe oldTrade = trades.get(index);
-            ItemStack result = oldTrade.getResult().clone();
-            EnchantmentStorageMeta storage = (EnchantmentStorageMeta) result.getItemMeta();
-            storage.removeStoredEnchant(Enchantment.MENDING);
-            storage.addStoredEnchant(Enchantment.DURABILITY, 3, true);
-            result.setItemMeta(storage);
+            ItemStack result = oldTrade.getResult();
+            replaceMendingOnItem(result);
             MerchantRecipe newTrade = new MerchantRecipe(
                     result,
                     oldTrade.getUses(),
