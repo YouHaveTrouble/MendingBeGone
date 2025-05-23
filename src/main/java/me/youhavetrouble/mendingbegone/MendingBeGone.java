@@ -75,7 +75,7 @@ public final class MendingBeGone extends JavaPlugin implements Listener {
             itemStack.removeEnchantment(Enchantment.MENDING);
             if (itemStack.containsEnchantment(Enchantment.DURABILITY))
                 itemStack.removeEnchantment(Enchantment.DURABILITY);
-            itemStack.addEnchantment(Enchantment.DURABILITY, 3);
+            itemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 3);
         }
         if (!Material.ENCHANTED_BOOK.equals(itemStack.getType())) return;
         ItemMeta meta = itemStack.getItemMeta();
